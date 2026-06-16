@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MetaLearn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- MODE RAIL -->
+  <nav class="rail">
+    <div class="rail-logo" onclick="showMode('home')"><span>M</span></div>
+    <div class="rail-sep"></div>
+    <button class="mode-btn" id="btn-career" onclick="showMode('career')">
+      <span class="mode-btn-icon">🎯</span>
+      <div class="mode-tooltip">Career</div>
+    </button>
+    <button class="mode-btn" id="btn-academic" onclick="showMode('academic')">
+      <span class="mode-btn-icon">🎓</span>
+      <div class="mode-tooltip">Academic</div>
+    </button>
+    <button class="mode-btn" id="btn-self" onclick="showMode('self')">
+      <span class="mode-btn-icon">🌱</span>
+      <div class="mode-tooltip">Self-Learn</div>
+    </button>
+    <div class="rail-bottom">
+      <button class="rail-icon-btn" title="Dashboard" onclick="showView('dashboard')">📊</button>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="mode-wordmark" id="modeWordmark">
+        MetaLearn<span id="modeSubtitle">Choose a mode to begin</span>
+      </div>
+    </div>
+
+    <!-- Career Nav -->
+    <div id="nav-career" class="sidebar-nav hidden">
+      <div class="nav-group">
+        <div class="nav-group-label">Interview Prep</div>
+        <div class="nav-item" data-view="jd-analysis" onclick="showView('jd-analysis')"><span class="nav-icon">🔍</span>JD Analysis</div>
+        <div class="nav-item" data-view="mock-interview" onclick="showView('mock-interview')"><span class="nav-icon">🎙</span>Mock Interview</div>
+        <div class="nav-item" data-view="resume" onclick="showView('resume')"><span class="nav-icon">📄</span>Resume Optimizer</div>
+        <div class="nav-item" data-view="salary" onclick="showView('salary')"><span class="nav-icon">💰</span>Salary Intel</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Grow</div>
+        <div class="nav-item" data-view="upskill" onclick="showView('upskill')"><span class="nav-icon">📈</span>Skill Map</div>
+        <div class="nav-item" data-view="career-plan" onclick="showView('career-plan')"><span class="nav-icon">🗺</span>Learning Plan</div>
+      </div>
+    </div>
+
+    <!-- Academic Nav -->
+    <div id="nav-academic" class="sidebar-nav hidden">
+      <div class="nav-group">
+        <div class="nav-group-label">Learn</div>
+        <div class="nav-item" data-view="acad-session" onclick="showView('acad-session')"><span class="nav-icon">📖</span>New Session</div>
+        <div class="nav-item" data-view="acad-upload" onclick="showView('acad-upload')"><span class="nav-icon">📎</span>Upload Material</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Assess</div>
+        <div class="nav-item" data-view="feynman" onclick="showView('feynman')"><span class="nav-icon">🧪</span>Feynman Test</div>
+        <div class="nav-item" data-view="acad-quiz" onclick="showView('acad-quiz')"><span class="nav-icon">✏️</span>Quiz Me</div>
+        <div class="nav-item" data-view="misconceptions" onclick="showView('misconceptions')"><span class="nav-icon">⚠️</span>Misconceptions <span class="nav-badge nav-badge-red" id="miscBadge" style="display:none">0</span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Track</div>
+        <div class="nav-item" data-view="exam-wrapper" onclick="showView('exam-wrapper')"><span class="nav-icon">📝</span>Exam Wrapper</div>
+        <div class="nav-item" data-view="spaced-rep" onclick="showView('spaced-rep')"><span class="nav-icon">🔁</span>Review Queue <span class="nav-badge nav-badge-red">3</span></div>
+      </div>
+    </div>
+
+    <!-- Self-Learn Nav -->
+    <div id="nav-self" class="sidebar-nav hidden">
+      <div class="nav-group">
+        <div class="nav-group-label">Explore</div>
+        <div class="nav-item" data-view="self-session" onclick="showView('self-session')"><span class="nav-icon">💬</span>Curiosity Session</div>
+        <div class="nav-item" data-view="rabbit-hole" onclick="showView('rabbit-hole')"><span class="nav-icon">🕳</span>Rabbit Hole</div>
+        <div class="nav-item" data-view="connections" onclick="showView('connections')"><span class="nav-icon">🕸</span>Idea Connections</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Reflect</div>
+        <div class="nav-item" data-view="journal" onclick="showView('journal')"><span class="nav-icon">📓</span>Learning Journal</div>
+        <div class="nav-item" data-view="muddiest" onclick="showView('muddiest')"><span class="nav-icon">🌫</span>Muddiest Point</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Goals</div>
+        <div class="nav-item" data-view="self-goals" onclick="showView('self-goals')"><span class="nav-icon">🎯</span>My Goals</div>
+        <div class="nav-item" data-view="habit-tracker" onclick="showView('habit-tracker')"><span class="nav-icon">🔥</span>Learning Habits</div>
+      </div>
+    </div>
+
+    <!-- Metacognitive Pulse -->
+    <div class="meta-pulse">
+      <div class="pulse-title">Metacognitive Pulse</div>
+      <div class="pulse-row"><div class="pulse-label">Knowledge</div><div class="pulse-track"><div class="pulse-fill" id="pKnow" style="width:62%;background:var(--career)"></div></div><div class="pulse-val" style="color:var(--career)" id="pKnowVal">62</div></div>
+      <div class="pulse-row"><div class="pulse-label">Calibration</div><div class="pulse-track"><div class="pulse-fill" id="pCalib" style="width:44%;background:var(--amber)"></div></div><div class="pulse-val" style="color:var(--amber)" id="pCalibVal">44</div></div>
+      <div class="pulse-row"><div class="pulse-label">Reflection</div><div class="pulse-track"><div class="pulse-fill" id="pRef" style="width:71%;background:var(--self)"></div></div><div class="pulse-val" style="color:var(--self)" id="pRefVal">71</div></div>
+      <div class="pulse-row" style="margin-bottom:0"><div class="pulse-label">Transfer</div><div class="pulse-track"><div class="pulse-fill" id="pTrans" style="width:38%;background:var(--academic)"></div></div><div class="pulse-val" style="color:var(--academic)" id="pTransVal">38</div></div>
+      <div class="pulse-insight" id="pulseInsight">You tend to overestimate confidence before learning. Use pre-assessments honestly.</div>
+    </div>
+
+    <div class="api-section">
+      <div class="api-label">API Key (Anthropic)</div>
+      <input class="api-input" type="password" id="apiKey" placeholder="sk-ant-...">
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainArea">
+    <div class="loading-veil hidden" id="loader">
+      <div class="spinner"></div>
+      <div class="loading-msg" id="loaderMsg">Thinking...</div>
+    </div>
+
+    <!-- Views injected here by views.js -->
+    <div id="views-container"></div>
+  </main>
+</div>
+
+<script src="views.js"></script>
+<script src="api.js"></script>
+<script src="career.js"></script>
+<script src="academic.js"></script>
+<script src="selflearn.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

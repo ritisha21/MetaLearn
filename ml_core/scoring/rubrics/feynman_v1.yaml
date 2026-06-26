@@ -1,0 +1,95 @@
+# ml_core/scoring/rubrics/feynman_v1.yaml
+#
+# Scoring rubric for Feynman-style explanations ("explain this concept as
+# if teaching a curious 12-year-old"). Kept as a standalone YAML file, not
+# a hardcoded string in feynman_scorer.py, so:
+#   1. The rubric can be edited without touching code.
+#   2. ml_core/eval/golden_set.json can pin expected scores against a
+#      specific rubric_version, and a future rubric edit can be diffed
+#      against the golden set to see whether scores drift before shipping
+#      the change.
+#   3. Non-engineers (the actual learning-design literature this product
+#      leans on) can review/propose rubric changes as a YAML diff, not a
+#      Python diff.
+#
+# Grounded in two specific findings from the research base (see
+# MetaLearn_Strategy_and_Research.md):
+#   - Serra & Metcalfe (2009): learners overestimate understanding of TEXTS
+#     specifically because recognizable terminology feels like
+#     comprehension. The "transfer" and "depth" dimensions exist
+#     specifically to catch an explanation that recycles source vocabulary
+#     without demonstrating independent reconstruction.
+#   - Thiede & Anderson (2003): delayed, source-independent summarization
+#     produces more accurate self-assessment than immediate review. This
+#     rubric assumes the explanation was written without the source
+#     material visible — see prompt_lib.py's grounding instructions for
+#     where that constraint is enforced upstream, not here.
+
+rubric_version: "feynman_v1"
+
+dimensions:
+  accuracy:
+    weight: 0.30
+    description: >
+      Is the explanation factually correct? Does it avoid stating
+      something false or meaningfully misleading about the concept?
+    scoring_guide:
+      0.0-0.3: "Contains a core factual error that would mislead someone learning this for the first time."
+      0.3-0.6: "Mostly correct but has at least one meaningful inaccuracy or oversimplification that distorts the concept."
+      0.6-0.85: "Correct in substance, with only minor imprecision that doesn't change understanding."
+      0.85-1.0: "Fully accurate — nothing a subject-matter expert would need to correct."
+
+  clarity:
+    weight: 0.20
+    description: >
+      Would a smart 12-year-old with no background actually understand
+      this? Penalize jargon used without being unpacked, and circular
+      definitions (explaining a term using itself or an equally unfamiliar
+      term).
+    scoring_guide:
+      0.0-0.3: "Relies on undefined jargon throughout; a novice would not follow this at all."
+      0.3-0.6: "Some jargon is unpacked, but parts remain inaccessible without prior background."
+      0.6-0.85: "Mostly accessible; one or two terms could be explained more simply."
+      0.85-1.0: "A genuine novice could follow this end to end."
+
+  depth:
+    weight: 0.25
+    description: >
+      Does the explanation address WHY/HOW the concept works, not just
+      WHAT it is? A definition restated in different words is NOT depth —
+      depth requires mechanism, cause, or reasoning.
+    scoring_guide:
+      0.0-0.3: "Pure definition/restatement with no mechanism — describes WHAT but never WHY or HOW."
+      0.3-0.6: "Gestures at mechanism but doesn't follow through — starts to explain why, then stops short."
+      0.6-0.85: "Explains the actual mechanism or reasoning, with at least one gap or unexamined step."
+      0.85-1.0: "Fully traces the mechanism or causal chain — a reader would understand WHY this works, not just that it does."
+
+  transfer:
+    weight: 0.25
+    description: >
+      Does the explanation use an analogy, example, or application that is
+      NOT lifted directly from typical source material on this topic? This
+      is the strongest signal of independent reconstruction vs. recall —
+      per Serra & Metcalfe (2009), recognizing source vocabulary is not
+      the same as having rebuilt the idea independently.
+    scoring_guide:
+      0.0-0.3: "No analogy or example at all, or one copied near-verbatim from how the topic is typically taught."
+      0.3-0.6: "Attempts an analogy/example but it's generic, vague, or only loosely connected to the actual mechanism."
+      0.6-0.85: "Uses a genuine, specific analogy or example that maps onto the real mechanism."
+      0.85-1.0: "Uses an original, well-mapped analogy AND applies the concept to a novel situation not typically used to teach it."
+
+# Composite score = weighted sum of the four dimensions above.
+# Computed in code (scoring.py), not by the model itself — the model
+# returns per-dimension scores + rationale only, and the deterministic
+# weighted-sum is computed in Python so the formula is auditable and
+# can't silently drift between calls the way an LLM-computed "overall"
+# number could.
+composite_formula: "weighted_sum"
+
+# Calibration interpretation bands, used by the results screen.
+# (Pure presentation logic — these are not used in score computation.)
+overall_bands:
+  needs_work: [0.0, 0.5]
+  developing: [0.5, 0.7]
+  solid: [0.7, 0.85]
+  excellent: [0.85, 1.0]
